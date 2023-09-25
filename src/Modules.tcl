@@ -21,8 +21,13 @@ if {$ARCHGRP_ARR(PCIE_ENDPOINTS) == 1} {
     }
 }
 
-lappend MOD "$ENTITY_BASE/ip/xvc_vsec/xvc_vsec.xci"
-lappend MOD "$ENTITY_BASE/ip/cmac_eth_1x100g/cmac_eth_1x100g.xci"
+if {$ARCHGRP_ARR(XVC_ENABLE)} {
+    lappend MOD "$ENTITY_BASE/ip/xvc_vsec/xvc_vsec.xci"
+}
+
+if {$ARCHGRP_ARR(NET_MOD_ARCH) != "EMPTY"} {
+    lappend MOD "$ENTITY_BASE/ip/cmac_eth_1x100g/cmac_eth_1x100g.xci"
+}
 
 # Top-level
 lappend MOD "$ENTITY_BASE/fpga.vhd"

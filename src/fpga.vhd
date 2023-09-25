@@ -142,17 +142,20 @@ begin
     eth_rx_p <= QSFP1_RX_P & QSFP0_RX_P;
     eth_rx_n <= QSFP1_RX_N & QSFP0_RX_N;
 
-    QSFP1_TX_P <= eth_tx_p(2*ETH_LANES-1 downto 1*ETH_LANES);
-    QSFP1_TX_N <= eth_tx_n(2*ETH_LANES-1 downto 1*ETH_LANES);
-    QSFP0_TX_P <= eth_tx_p(1*ETH_LANES-1 downto 0*ETH_LANES);
-    QSFP0_TX_N <= eth_tx_n(1*ETH_LANES-1 downto 0*ETH_LANES);
+    net_arch_empty_g: if (NET_MOD_ARCH /= "EMPTY") generate
+        QSFP1_TX_P <= eth_tx_p(2*ETH_LANES-1 downto 1*ETH_LANES);
+        QSFP1_TX_N <= eth_tx_n(2*ETH_LANES-1 downto 1*ETH_LANES);
+        QSFP0_TX_P <= eth_tx_p(1*ETH_LANES-1 downto 0*ETH_LANES);
+        QSFP0_TX_N <= eth_tx_n(1*ETH_LANES-1 downto 0*ETH_LANES);
 
-    QSFP1_LPMODE  <= qsfp_lpmode(1);
-    QSFP1_RESET_N <= qsfp_reset_n(1);
+        QSFP1_LPMODE  <= qsfp_lpmode(1);
+        QSFP1_RESET_N <= qsfp_reset_n(1);
+        QSFP0_LPMODE  <= qsfp_lpmode(0);
+        QSFP0_RESET_N <= qsfp_reset_n(0);
+    end generate;
+
     --QSFP1_SCL     <= qsfp_scl(1);
     --QSFP1_SDA     <= qsfp_sda(1);
-    QSFP0_LPMODE  <= qsfp_lpmode(0);
-    QSFP0_RESET_N <= qsfp_reset_n(0);
     --QSFP0_SCL     <= qsfp_scl(0);
     --QSFP0_SDA     <= qsfp_sda(0);
 

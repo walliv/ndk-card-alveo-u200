@@ -42,6 +42,13 @@ lappend HIERARCHY(COMPONENTS) [list "TOPLEVEL" $CARD_BASE/src $ARCHGRP_ALL]
 # XDC constraints for specific parts of the design
 lappend SYNTH_FLAGS(CONSTR) "$CARD_BASE/constr/general.xdc"
 lappend SYNTH_FLAGS(CONSTR) "$CARD_BASE/constr/pcie.xdc"
-lappend SYNTH_FLAGS(CONSTR) "$CARD_BASE/constr/qsfp.xdc"
-lappend SYNTH_FLAGS(CONSTR) "$CARD_BASE/constr/qsfp_loc.xdc"
+
+if {$NET_MOD_ARCH != "EMPTY"} {
+    lappend SYNTH_FLAGS(CONSTR) "$CARD_BASE/constr/qsfp.xdc"
+    lappend SYNTH_FLAGS(CONSTR) [list "$CARD_BASE/constr/qsfp_loc.xdc" USED_IN implementation]
+} else {
+    lappend SYNTH_FLAGS(CONSTR) "$CARD_BASE/constr/qsfp_disconnect.xdc"
+
+}
+
 #lappend SYNTH_FLAGS(CONSTR) "$CARD_BASE/constr/ddr4.xdc"

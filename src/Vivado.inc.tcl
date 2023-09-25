@@ -41,7 +41,12 @@ lappend HIERARCHY(COMPONENTS) [list "TOPLEVEL" $CARD_BASE/src $ARCHGRP_ALL]
 
 # XDC constraints for specific parts of the design
 lappend SYNTH_FLAGS(CONSTR) "$CARD_BASE/constr/general.xdc"
-lappend SYNTH_FLAGS(CONSTR) "$CARD_BASE/constr/pcie.xdc"
+# Adds half of the lanes, e.g. 0-7
+lappend SYNTH_FLAGS(CONSTR) "$CARD_BASE/constr/pcie_half.xdc"
+# Adds another half of the lanes, e.g. 8-15
+if {$PCIE_ENDPOINT_MODE == 0} {
+    lappend SYNTH_FLAGS(CONSTR) "$CARD_BASE/constr/pcie_full.xdc"
+}
 
 if {$NET_MOD_ARCH != "EMPTY"} {
     lappend SYNTH_FLAGS(CONSTR) "$CARD_BASE/constr/qsfp.xdc"

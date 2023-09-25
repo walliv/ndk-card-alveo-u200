@@ -11,7 +11,7 @@ source $env(CORE_BASE)/config/core_bootstrap.tcl
 source $CORE_BASE/Vivado.inc.tcl
 
 # Design parameters
-set SYNTH_FLAGS(MODULE)    "fpga"
+set SYNTH_FLAGS(MODULE)    "FPGA"
 set SYNTH_FLAGS(FPGA)      "xcu200-fsgd2104-2-e"
 set SYNTH_FLAGS(MCS_IFACE) "SPIx4"
 set SYNTH_FLAGS(BOARD)     $CARD_NAME

@@ -15,7 +15,7 @@ include $(COMBO_BASE)/conf/ndk_paths.mk
 
 # Name for output files (rootname)
 # This value is set as default in SYNTH_FLAGS(OUTPUT)
-OUTPUT_NAME ?= alveo_u200
+OUTPUT_NAME ?= alveo-u200
 
 USER_ENV ?=
 

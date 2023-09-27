@@ -31,11 +31,11 @@ set_property PACKAGE_PIN AV19    [get_ports {SYSCLK_N}]
 set_property IOSTANDARD LVDS     [get_ports {SYSCLK*}]
 create_clock -period 6.400       [get_ports {SYSCLK_P}]
 
-set_property PACKAGE_PIN BC21    [get_ports {LED_STATUS[0]}]
-set_property PACKAGE_PIN BB21    [get_ports {LED_STATUS[1]}]
-set_property PACKAGE_PIN BA20    [get_ports {LED_STATUS[2]}]
-set_property IOSTANDARD LVCMOS12 [get_ports {LED_STATUS*}]
-set_property DRIVE 8             [get_ports {LED_STATUS*}]
-set_property SLEW SLOW           [get_ports {LED_STATUS*}]
+set_property PACKAGE_PIN BC21    [get_ports {STATUS_LED[0]}]
+set_property PACKAGE_PIN BB21    [get_ports {STATUS_LED[1]}]
+set_property PACKAGE_PIN BA20    [get_ports {STATUS_LED[2]}]
+set_property IOSTANDARD LVCMOS12 [get_ports {STATUS_LED*}]
+set_property DRIVE 8             [get_ports {STATUS_LED*}]
+set_property SLEW SLOW           [get_ports {STATUS_LED*}]
 
 # TODO BMC

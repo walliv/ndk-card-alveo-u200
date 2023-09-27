@@ -65,7 +65,7 @@ port (
     QSFP1_TX_P          : out   std_logic_vector(3 downto 0);
     QSFP1_TX_N          : out   std_logic_vector(3 downto 0);
 
-    LED_STATUS          : out   std_logic_vector(2 downto 0)
+    STATUS_LED          : out   std_logic_vector(2 downto 0)
 );
 end entity;
 
@@ -104,7 +104,13 @@ architecture FULL of FPGA is
     signal qsfp_sda         : std_logic_vector(2-1 downto 0) := (others => 'Z');
     signal qsfp_modprs_n    : std_logic_vector(2-1 downto 0);
     signal qsfp_int_n       : std_logic_vector(2-1 downto 0);
-    
+
+    signal boot_mi_rd       : std_logic;
+    signal boot_mi_wr       : std_logic;
+    signal boot_mi_drd      : std_logic_vector(31 downto 0);
+    signal boot_mi_ardy     : std_logic;
+    signal boot_mi_drdy     : std_logic;
+
     signal misc_in          : std_logic_vector(MISC_IN_WIDTH-1 downto 0) := (others => '0');
     signal misc_out         : std_logic_vector(MISC_OUT_WIDTH-1 downto 0);
 
@@ -160,7 +166,10 @@ begin
 
     qsfp_modprs_n <= QSFP1_MODPRS_N & QSFP0_MODPRS_N;
     qsfp_int_n    <= QSFP1_INT_N & QSFP0_INT_N;
- 
+
+    boot_mi_ardy <= boot_mi_rd or boot_mi_wr;
+    boot_mi_drdy <= boot_mi_rd;
+    boot_mi_drd  <= (others => '0');
     -- FPGA COMMON -------------------------------------------------------------
     cm_i : entity work.FPGA_COMMON
     generic map (
@@ -184,7 +193,7 @@ begin
         QSFP_I2C_PORTS          => ETH_PORTS,
         ETH_PORT_LEDS           => 2, -- fake leds
 
-        STATUS_LEDS             => 3,
+        STATUS_LEDS             => 2,
 
         MISC_IN_WIDTH           => MISC_IN_WIDTH,
         MISC_OUT_WIDTH          => MISC_OUT_WIDTH,
@@ -235,6 +244,13 @@ begin
 
         QSFP_I2C_SCL            => open,--qsfp_scl(ETH_PORTS-1 downto 0),
         QSFP_I2C_SDA            => open,--qsfp_sda(ETH_PORTS-1 downto 0),
+        QSFP_I2C_SDA_I          =>(others => '0'),
+        QSFP_I2C_SCL_I          =>(others => '0'),
+        QSFP_I2C_SCL_O          => open,
+        QSFP_I2C_SCL_OE         => open,
+        QSFP_I2C_SDA_O          => open,
+        QSFP_I2C_SDA_OE         => open,
+        QSFP_I2C_DIR            => open,
 
         QSFP_MODSEL_N           => open,
         QSFP_LPMODE             => qsfp_lpmode(ETH_PORTS-1 downto 0),
@@ -242,44 +258,50 @@ begin
         QSFP_MODPRS_N           => qsfp_modprs_n(ETH_PORTS-1 downto 0),
         QSFP_INT_N              => qsfp_int_n(ETH_PORTS-1 downto 0),
 
-        STATUS_LED_G            => LED_STATUS,
-        STATUS_LED_R            => open,
+        MEM_CLK                 => (others => '0'),
+        MEM_RST                 => (others => '0'),
 
-        --PCIE_CLK                => pcie_clk,
-        --PCIE_RESET              => pcie_reset,
-    --
-        --BOOT_MI_CLK             => boot_mi_clk,
-        --BOOT_MI_RESET           => boot_mi_reset,
-        --BOOT_MI_DWR             => boot_mi_dwr,
-        --BOOT_MI_ADDR            => boot_mi_addr,
-        --BOOT_MI_RD              => boot_mi_rd,
-        --BOOT_MI_WR              => boot_mi_wr,
-        --BOOT_MI_BE              => boot_mi_be,
-        --BOOT_MI_DRD             => boot_mi_drd,
-        --BOOT_MI_ARDY            => boot_mi_ardy,
-        --BOOT_MI_DRDY            => boot_mi_drdy,
+        -- Avalon interface to mem_tester
+        MEM_AVMM_READY          => (others => '0'),
+        MEM_AVMM_READ           => open,
+        MEM_AVMM_WRITE          => open,
+        MEM_AVMM_ADDRESS        => open,
+        MEM_AVMM_BURSTCOUNT     => open,
+        MEM_AVMM_WRITEDATA      => open,
+        MEM_AVMM_READDATA       => (others => (others => '0')),
+        MEM_AVMM_READDATAVALID  => (others => '0'),
 
-        --MEM_CLK                 => ddr_ui_clk,
-        --MEM_RST                 => ddr_ui_clk_sync_rst,
---
-        --MEM_AVMM_READY          => mem_avmm_ready,
-        --MEM_AVMM_READ           => mem_avmm_read,
-        --MEM_AVMM_WRITE          => mem_avmm_write,
-        --MEM_AVMM_ADDRESS        => mem_avmm_address,
-        --MEM_AVMM_BURSTCOUNT     => mem_avmm_burstcount,
-        --MEM_AVMM_WRITEDATA      => mem_avmm_writedata,
-        --MEM_AVMM_READDATA       => mem_avmm_readdata,
-        --MEM_AVMM_READDATAVALID  => mem_avmm_readdatavalid,
---
-        --EMIF_RST_REQ            => ddr_areset,
-        --EMIF_RST_DONE           => ddr_init_calib_complete,
-        --EMIF_CAL_SUCCESS        => ddr_init_calib_complete,
-        --EMIF_ECC_USR_INT        => (others => '0'),
-        --EMIF_CAL_FAIL           => (others => '0'),
-        --MEM_REFR_ACK            => (others => '1'),
+        MEM_REFR_PERIOD         => open,
+        MEM_REFR_REQ            => open,
+        MEM_REFR_ACK            => (others => '1'),
+
+        EMIF_RST_REQ            => open,
+        EMIF_RST_DONE           => (others => '0'),
+        EMIF_CAL_SUCCESS        => (others => '0'),
+        EMIF_ECC_USR_INT        => (others => '0'),
+        EMIF_CAL_FAIL           => (others => '0'),
+        EMIF_AUTO_PRECHARGE     => open,
+
+        STATUS_LED_G(0)         => STATUS_LED(0),
+        STATUS_LED_G(1)         => STATUS_LED(1),
+        STATUS_LED_R(0)         => STATUS_LED(2),
+        STATUS_LED_R(1)         => open,
+
+        PCIE_CLK                => open,
+        PCIE_RESET              => open,
+
+        BOOT_MI_CLK             => open,
+        BOOT_MI_RESET           => open,
+        BOOT_MI_DWR             => open,
+        BOOT_MI_ADDR            => open,
+        BOOT_MI_RD              => boot_mi_rd,
+        BOOT_MI_WR              => boot_mi_wr,
+        BOOT_MI_BE              => open,
+        BOOT_MI_DRD             => boot_mi_drd,
+        BOOT_MI_ARDY            => boot_mi_ardy,
+        BOOT_MI_DRDY            => boot_mi_drdy,
 
         MISC_IN                 => misc_in,
         MISC_OUT                => misc_out
     );
-
 end architecture;

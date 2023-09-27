@@ -1,6 +1,7 @@
 -- fpga.vhd: Alveo U200 board top level entity and architecture
 -- Copyright (C) 2022 CESNET z. s. p. o.
 -- Author(s): Jakub Cabal <cabal@cesnet.cz>
+--            Vladislav Valek <valekv@cesnet.cz>
 --
 -- SPDX-License-Identifier: BSD-3-Clause
 

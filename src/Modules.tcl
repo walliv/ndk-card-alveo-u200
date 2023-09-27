@@ -1,6 +1,7 @@
 # Modules.tcl: script to compile card
 # Copyright (C) 2023 CESNET z. s. p. o.
 # Author(s): Jakub Cabal <cabal@cesnet.cz>
+#            Vladislav Valek <valekv@cesnet.cz>
 #
 # SPDX-License-Identifier: BSD-3-Clause
 
